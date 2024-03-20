@@ -661,7 +661,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
     }
 
-    const socket = socketIOClient(props.apiHost as string);
+    // If a subpath is present in the hosted URL, it must be passed along as 'path' in socket.io.
+    // Check if present, and if so set it.
+    // Remove trailing slash as well, if present.
+    let propApiHost = props.apiHost;
+    if (propApiHost?.endsWith('/')) {
+      propApiHost = propApiHost.slice(0, -1);
+    }
+    const apiHostUrl = new URL(propApiHost as string);
+    const apiHostOrigin = apiHostUrl.origin;
+    const pathName = apiHostUrl.pathname?.length > 1 ? apiHostUrl.pathname + '/socket.io' : '';
+    const socket = socketIOClient(apiHostOrigin, { path: pathName });
 
     socket.on('connect', () => {
       setSocketIOClientId(socket.id);
@@ -1217,12 +1227,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               />
             )}
           </div>
-          <Badge
+          {/* <Badge
             footer={props.footer}
             badgeBackgroundColor={props.badgeBackgroundColor}
             poweredByTextColor={props.poweredByTextColor}
             botContainer={botContainer}
-          />
+          /> */}
         </div>
       </div>
       {sourcePopupOpen() && <Popup isOpen={sourcePopupOpen()} value={sourcePopupSrc()} onClose={() => setSourcePopupOpen(false)} />}
