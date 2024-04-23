@@ -674,7 +674,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const socket = socketIOClient(apiHostOrigin, { path: pathName });
 
     socket.on('connect', () => {
-      setSocketIOClientId(socket.id);
+      setSocketIOClientId(socket.id ?? '');
     });
 
     socket.on('start', () => {
