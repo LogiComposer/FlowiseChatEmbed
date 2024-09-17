@@ -529,8 +529,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const fetchResponseFromEventStream = async (chatflowid: string, params: any) => {
     const chatId = params.chatId;
     const input = params.question;
+
+    // Remove trailing slash if present.
+    let propApiHost = props.apiHost;
+    if (propApiHost?.endsWith('/')) {
+      propApiHost = propApiHost.slice(0, -1);
+    }
+
     params.streaming = true;
-    fetchEventSource(`${props.apiHost}/api/v1/prediction/${chatflowid}`, {
+    fetchEventSource(`${propApiHost}/api/v1/prediction/${chatflowid}`, {
       openWhenHidden: true,
       method: 'POST',
       body: JSON.stringify(params),
